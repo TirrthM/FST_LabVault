@@ -1,218 +1,244 @@
-# LabVault — Laboratory Equipment Lifecycle & Maintenance Platform
+# LabVault 🔬
+### Laboratory Equipment Lifecycle & Maintenance Platform
 
-[![Next.js](https://img.shields.io/badge/Next.js-14.2-black?logo=next.js)](https://nextjs.org/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue?logo=typescript)](https://www.typescriptlang.org/)
-[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.4-38bdf8?logo=tailwind-css)](https://tailwindcss.com/)
-[![Prisma](https://img.shields.io/badge/Prisma-5.20-2D3748?logo=prisma)](https://www.prisma.io/)
-[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-16-4169E1?logo=postgresql)](https://www.postgresql.org/)
-[![Resend](https://img.shields.io/badge/Resend-Email-black)](https://resend.com/)
-[![React Email](https://img.shields.io/badge/React_Email-0.0.25-black)](https://react.email/)
-[![Radix UI](https://img.shields.io/badge/Radix_UI-Primitives-black)](https://www.radix-ui.com/)
-[![Zustand](https://img.shields.io/badge/Zustand-4.5-brown)](https://github.com/pmndrs/zustand)
-[![Zod](https://img.shields.io/badge/Zod-3.23-blue)](https://zod.dev/)
-
-> **Subtitle:** Modern Laboratory Equipment Lifecycle, Chain of Custody, Metrology & Transactional Notification Platform for Higher Education and Scientific Research Institutions.
+> **Advanced Full-Stack Web Application (Assignments 1 & 2 Combined)**  
+> Built with **Next.js 14 App Router**, **TypeScript**, **PostgreSQL**, **Prisma ORM**, **Faker.js**, **Resend & React Email**, **Zustand**, and **shadcn/ui**.
 
 ---
 
-## 🔬 Project Overview
+## 📖 Overview
 
-**LabVault** is an enterprise-grade laboratory equipment management platform specifically architected for academic universities and research departments. It orchestrates the complete lifecycle of mission-critical laboratory assets:
+**LabVault** is an enterprise-grade laboratory equipment management platform developed for higher education and scientific research institutions. 
 
-$$\text{Acquisition} \longrightarrow \text{Lab Allocation} \longrightarrow \text{Availability} \longrightarrow \text{Requisition} \longrightarrow \text{Approval} \longrightarrow \text{In Custody} \longrightarrow \text{Return \& Inspection} \longrightarrow \text{Maintenance} \longrightarrow \text{ISO-17025 Calibration} \longrightarrow \text{Return to Service}$$
+In many universities, laboratory assets (such as scanning electron microscopes, high-speed centrifuges, spectrometers, and oscilloscopes) are managed through paper logbooks or scattered spreadsheets. This results in misplaced equipment, unreturned loans, unrecorded hardware faults, and missed calibration deadlines.
 
-The platform maintains an **immutable chain-of-custody audit log**, empowering lab managers, deans, and technicians to answer:
-- *"Who currently holds physical custody of this asset?"*
-- *"When was it checked out and for which academic project?"*
-- *"Was any damage or calibration drift detected upon return inspection?"*
-- *"Who repaired this instrument and which components were replaced?"*
-- *"When is the next NIST-traceable ISO-17025 calibration due?"*
-
----
-
-## 🏛️ Academic Coursework Context: Assignment 1 + Assignment 2 Integration
-
-This repository houses the complete, unified full-stack implementation spanning both **Assignment 1** and **Assignment 2**:
-
-### Self-Learning Topics Fully Implemented
-1. **Topic 1:** Accessible UI Component Primitives with shadcn/ui & Radix UI primitives (`src/components/ui/`, `/ui` sandbox).
-2. **Topic 2:** Lightweight Client-Side State Management with Zustand (Granular selectors, localStorage persistence, RSC separation).
-3. **Topic 3:** Type-Safe Form Handling & Schema Validation with Zod, React Hook Form, and Server Actions (Double validation on client & server).
-4. **Topic 4 (Assignment 2):** Database Seeding & Automated Mock Data with Faker.js & Prisma ORM (`prisma/seed.ts`, `@faker-js/faker`).
-5. **Topic 5 (Assignment 2):** Transactional Email Integration with Resend & React Email (`src/emails/`, `src/lib/email.ts`, `/api/webhooks/resend`).
+**LabVault solves this by providing a unified digital platform that manages the entire lifecycle of laboratory equipment:**
+- **Acquisition & Cataloging:** Asset tracking with serial numbers, warranty dates, specs, and dynamic QR/social cards.
+- **Digital Requisitions & Checkouts:** Multi-step loan pipeline with student requests, manager approvals, and technician checkouts.
+- **Maintenance & Work Orders:** Diagnostic ticketing system, part replacement logs, and repair cost tracking.
+- **Metrology & Calibrations:** ISO/IEC 17025:2017 compliant calibration schedules with NIST standards tracking.
+- **Automated Communication:** Transactional email alerts for approvals, overdue returns, assignments, and critical failures.
+- **Immutable Audit Trail:** Comprehensive chain-of-custody logging for complete institutional accountability.
 
 ---
 
-## ⚡ Key Features & Capabilities
+## 🚀 Key Features
 
-- **Executive Dashboard (`/dashboard`)**: Real-time KPI cards, urgent safety and calibration alerts, lab capacity distribution, and live audit event stream.
-- **Interactive Equipment Discovery (`/equipment`)**: Zustand-powered search, faceted filters (Category, Lab, Status, Condition, Calibration), dense table view vs. visual card grid, and bookmark persistence.
-- **Dynamic Asset Detail (`/equipment/[id]`)**: Deep asset specifications, physical custody tracking card, tabbed lifecycle timeline, loan logs, maintenance tickets, and calibration records.
-- **Borrowing Requisition Pipeline (`/borrow-requests`)**: Multi-state custody progression (`REQUESTED` $\to$ `APPROVED` $\to$ `BORROWED` $\to$ `INSPECTED`) with role-aware approval and check-in dialogs.
-- **Technician Maintenance Service Bay (`/maintenance`)**: Multi-stage work orders (`OPEN` $\to$ `ASSIGNED` $\to$ `IN_REPAIR` $\to$ `TESTING` $\to$ `RESOLVED`), parts replacement tracking, and diagnostic logs.
-- **ISO-17025 Metrology Hub (`/calibration`)**: Real-time tracking of NIST calibration currency with visual indicators (`Calibrated`, `Due Soon ≤ 14d`, `Overdue`).
-- **Interactive Role Simulator (`/settings` & Header Switcher)**: Switch between **Student**, **Lab Technician**, **Lab Manager**, and **System Admin** with instant cryptographic session synchronization.
-- **Component Sandbox (`/ui`)**: Live showcase of all accessible Radix primitives, dialogs, sheets, popovers, tooltips, and contrast compliance.
-- **Dynamic OG Image Generator (`/api/og/equipment/[id]`)**: Server-rendered 1200×630 social preview cards generated dynamically with `@vercel/og`.
-- **Transactional Notifications (Resend + React Email)**: 7 automated email triggers for approvals, reminders, service orders, and safety hazards.
-- **Delivery Webhook (`/api/webhooks/resend`)**: Svix-verified webhook endpoint persisting email delivery events to PostgreSQL.
+### 🌟 Assignment 1 (Frontend & Architecture)
+- **Next.js 14 App Router & RSC:** Hybrid architecture with React Server Components (RSC) and Client Components for sub-second page loads.
+- **Accessible UI Design System:** 18+ accessible Radix UI primitives, dark/light theme switching, and custom laboratory telemetry status cards.
+- **Zustand Client Store:** Instant institutional role switching and shopping-cart-style equipment loan queue.
+- **Server Actions & Zod Validation:** Secure, non-blocking mutations with optimistic UI feedback and runtime schema enforcement.
+- **Dynamic OpenGraph Previews:** Server-generated preview cards via `@vercel/og` at `/api/og/equipment/[id]`.
 
----
-
-## 🛠️ Full-Stack Technology Stack
-
-| Layer | Technology | Rationale |
-| :--- | :--- | :--- |
-| **Framework** | Next.js 14 (App Router) | React Server Components by default, server-side data fetching, native streaming |
-| **Database & ORM** | PostgreSQL + Prisma ORM | Normalized multi-entity relational schema with foreign keys and cascade rules |
-| **Data Seeding** | `@faker-js/faker` | Deterministic relational seed engine generating realistic academic lab datasets |
-| **Email Service** | Resend + React Email | Type-safe JSX email templates with Svix-verified delivery webhook |
-| **Security & Auth**| Signed JWT (`jose`) + Middleware | Multi-layer RBAC protecting Edge routes, Server Actions, and REST endpoints |
-| **Language** | TypeScript 5.6 (Strict) | End-to-end type safety, strict interface models, zero `any` leaks |
-| **Styling** | Tailwind CSS + CVA | High-performance CSS variable design tokens, zero runtime style overhead |
-| **Primitives** | Radix UI | WAI-ARIA compliant unstyled accessible primitives with keyboard trapping |
-| **Theme** | next-themes | SSR-safe light, dark, and system default switching with zero hydration flash |
-| **Client State** | Zustand 4.5 | Granular subscriptions, localStorage persistence, separated from server data |
-| **Forms** | React Hook Form + Zod | Type-safe form states with client-side and server-side double validation |
-| **Server Actions**| Next.js Server Actions | Server mutations with cache revalidation and optimistic client rollbacks |
-| **Feedback** | Sonner | Accessible, customizable rich toast notification system |
-| **OG Images** | `@vercel/og` | Edge-rendered SVG/PNG Open Graph generation |
+### ⚡ Assignment 2 (Backend, Database & Telemetry)
+- **Normalized PostgreSQL Schema (Topic 4):** 9 relational models (*User, Lab, Equipment, BorrowRequest, MaintenanceTicket, MaintenanceWorkLog, CalibrationRecord, AuditLog, EmailEvent*) with 8 domain enums and 30+ indexes.
+- **Deterministic Automated Seeding (Topic 4):** Powered by `@faker-js/faker` with `faker.seed(123456)` to generate 32 multi-role users, 6 labs, 66 equipment assets, 90 borrow records, 35 repair tickets, and 130 audit logs.
+- **Transactional Email Subsystem (Topic 5):** Resend SDK integration with 7 responsive `@react-email` JSX templates and local simulation fallback mode.
+- **Delivery Webhook Tracking (Topic 5):** Cryptographic Svix signature validation endpoint at `/api/webhooks/resend` for tracking *Sent*, *Delivered*, *Opened*, and *Bounced* states.
+- **4-Tier RBAC Security:** Role-Based Access Control guarded by Next.js Edge Middleware and server-side authorization checks (`Student`, `Technician`, `Lab Manager`, `Admin`).
 
 ---
 
-## 🚀 Quick Start & Developer Setup
+## 🛠️ Technology Stack
 
-### 1. Install Dependencies
+| Layer | Technologies |
+|---|---|
+| **Framework** | Next.js 14.2 (App Router, Server Actions, Route Handlers) |
+| **Language** | TypeScript 5.6 (Strict Type Checking) |
+| **Styling & UI** | Tailwind CSS, shadcn/ui, Radix UI, Lucide Icons, Sonner |
+| **State & Forms** | Zustand, React Hook Form, Zod |
+| **Database & ORM** | PostgreSQL, Prisma ORM 5.20 |
+| **Mock Seeding** | Faker.js v9 (`@faker-js/faker`) |
+| **Transactional Email** | Resend SDK, React Email (`@react-email/components`) |
+| **Webhook Security** | Svix (`svix`) |
+| **Authentication & RBAC**| Jose (JWT), Next.js Edge Middleware |
+
+---
+
+## ⚡ Quick Start Guide (How to Run)
+
+### 1. Prerequisites
+Ensure you have the following installed on your machine:
+- **Node.js:** `v18.18.0` or higher
+- **PostgreSQL:** `v15` or higher running locally on port `5432`
+
+---
+
+### 2. Clone the Repository
+```bash
+git clone https://github.com/TirrthM/FST_LabVault.git
+cd FST_LabVault
+```
+
+---
+
+### 3. Install Dependencies
 ```bash
 npm install
 ```
 
-### 2. Configure Environment Variables
-Copy `.env.example` to `.env.local`:
-```bash
-cp .env.example .env.local
-```
+---
 
-Configure your variables:
+### 4. Configure Environment Variables
+Create a `.env` file in the root directory (or copy from `.env.example`):
 ```env
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/labvault?schema=public"
+# PostgreSQL Database Connection URL
+DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/labvault?schema=public"
+
+# Auth Session Secret
 AUTH_SECRET="labvault-super-secure-production-auth-secret-change-in-prod"
-RESEND_API_KEY="re_123456789_abcdefghijklmnopqrstuvwxyz"
+
+# Resend Transactional Email (Uses development simulation if mock key is kept)
+RESEND_API_KEY="re_mock_api_key_for_development"
 RESEND_FROM_EMAIL="LabVault Notifications <notifications@labvault.edu>"
-RESEND_WEBHOOK_SECRET="whsec_abcdefghijklmnopqrstuvwxyz123456"
+RESEND_WEBHOOK_SECRET="whsec_mock_webhook_secret_development"
+
+# App URL
 NEXT_PUBLIC_APP_URL="http://localhost:3000"
 ```
 
-### 3. Database Lifecycle Commands (Prisma & Faker.js)
+---
+
+### 5. Create Database & Apply Migrations
+Make sure PostgreSQL is running, create the database (if not already created), and run the Prisma migrations:
+
 ```bash
-# Generate Prisma Client
-npm run db:generate
-
-# Apply Migrations to PostgreSQL
-npm run db:migrate
-
-# Seed Database with 300+ Realistic Academic Lab Records
-npm run db:seed
-
-# Inspect Data with Prisma Studio Web GUI (http://localhost:5555)
-npx prisma studio
-
-# Reset Database (Wipe, Re-migrate & Auto-seed)
-npm run db:reset
+# Apply migrations to create all 9 relational tables
+npx prisma migrate dev --name init
 ```
 
-### 4. Launch Development Server
+---
+
+### 6. Seed the Database with Faker.js
+Populate the database with realistic academic equipment, users, loan requests, and audit logs:
+
+```bash
+npm run db:seed
+```
+
+*Output:*
+```
+🌱 Starting LabVault Database Seeding (Topic 4: Faker.js + Prisma)...
+👥 Created 32 Users (Students: 19, Techs: 4, Managers: 7, Admins: 2)
+🏢 Created 6 Facilities
+🔬 Created 66 Equipment Assets
+📋 Created 90 Borrow Requisitions
+🔧 Created 35 Maintenance Work Orders & Diagnostic Logs
+⚖️ Created 35 Calibration Records
+🛡️ Created 130 Immutable Audit Log Events
+📧 Created 25 Transactional Email Delivery Records
+🎉 Database Seeding Completed Successfully!
+```
+
+---
+
+### 7. Run the Development Server
 ```bash
 npm run dev
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+
+Open **[http://localhost:3000](http://localhost:3000)** in your browser to view the application!
 
 ---
 
-## 📂 Project Architecture & Documentation Sitemap
+### 8. View Database in Visual GUI (Prisma Studio)
+In a separate terminal, run:
+```bash
+npx prisma studio
+```
+Open **[http://localhost:5555](http://localhost:5555)** to explore all tables, relations, and records in real time.
+
+---
+
+## 👥 Multi-Role User Switcher & Credentials
+
+LabVault includes an instant **Institutional Role Switcher** in the top navigation bar. You can test all 4 perspectives seamlessly:
+
+| Role | Test User | Department / Access Level |
+|---|---|---|
+| **Student** | `Alex Rivera` | Can view catalog, search instruments, and submit borrow requests. |
+| **Lab Technician** | `Dave Chen` | Can perform checkouts, return inspections, log repairs, and record calibrations. |
+| **Lab Manager** | `Dr. Marcus Sterling` | Can approve/reject loan requests, assign maintenance tickets, and monitor facility status. |
+| **Administrator** | `Dr. Eleanor Vance` | Full system access: immutable chain-of-custody audit logs, lab configs, and user management. |
+
+---
+
+## 📧 Transactional Email Templates (Topic 5)
+
+LabVault contains 7 modular React Email templates in `src/emails/`:
+
+1. **`BorrowApprovedEmail`** — Notifies student of approved requisition with pickup details.
+2. **`BorrowRejectedEmail`** — Informs student of request rejection with reason.
+3. **`EquipmentDueReminderEmail`** — Automated 24-hour return reminder before loan expires.
+4. **`MaintenanceAssignedEmail`** — Alerts technician of a new repair order and hardware issue.
+5. **`MaintenanceResolvedEmail`** — Confirms repair completion and status restoration.
+6. **`CalibrationDueEmail`** — Warns lab managers of upcoming ISO-17025 calibration deadlines.
+7. **`CriticalIssueEmail`** — Immediate escalation alert to administrators for safety/hazard faults.
+
+---
+
+## 📁 Repository Structure
 
 ```
-d:/LabVault/
+d:\LabVault
 ├── prisma/
-│   ├── schema.prisma               # Multi-entity relational schema (9 models)
-│   └── seed.ts                     # Topic 4: Faker.js academic lab seed generator
-├── docs/                           # Academic Deliverables & Architectural Reports
-│   ├── Assignment-1-Technical-Report.md   # Assignment 1 Comprehensive Technical Report
-│   ├── Assignment-2-Technical-Report.md   # Assignment 2 Comprehensive Technical Report
-│   ├── Assignment-2-System-Architecture.md# Complete 2-page system architecture specification
-│   ├── database-relationships.md   # Relational ER diagram with Mermaid & foreign keys
-│   ├── authorization-flow.md       # Multi-layer RBAC security model & sequence diagram
-│   ├── database-seeding.md         # Database seeding & migration reset guide
-│   ├── Topic-1-Summary-Sheet.md    # Topic 1: Radix & shadcn accessibility summary
-│   ├── Topic-2-Survey-Report.md    # Topic 2: Zustand state management survey (2-3 pages)
-│   ├── Topic-3-Quiz.md             # Topic 3: Zod & React Hook Form practice quiz
-│   ├── Topic-4-Database-Seeding.md # Topic 4: Faker.js + Prisma technical note
-│   ├── Topic-5-Technical-Note.md   # Topic 5: Resend + React Email technical note (2 pages)
-│   ├── email-dispatch-log.md       # Transactional email testing procedure & dispatch log
-│   ├── architecture.md             # Assignment 1 system architecture & RSC boundaries
-│   ├── rsc-client-analysis.md      # Server vs Client Component analysis
-│   ├── state-management.md         # Zustand selector architecture & optimization
-│   ├── server-actions.md           # Server action validation & optimistic UI guide
-│   ├── og-images.md                # Dynamic OG image specification & test instructions
-│   ├── lighthouse-report.md        # Core Web Vitals & Lighthouse audit report
-│   ├── submission-checklist.md     # Assignment 1 submission checklist
-│   └── assignment-2-submission-checklist.md # Assignment 2 evidence capture checklist
+│   ├── schema.prisma           # 9 Relational PostgreSQL models & enums
+│   ├── seed.ts                 # Deterministic Faker.js database seeder
+│   └── migrations/             # SQL migration files
 ├── src/
-│   ├── actions/                    # Native Next.js Server Actions (Session + RBAC)
-│   │   ├── auth.ts                 # Role switching & session management
-│   │   ├── borrow.ts               # Requisition creation, approval, and check-in
-│   │   ├── maintenance.ts          # Fault logging, work order updates, and safety alerts
-│   │   ├── calibration.ts          # Metrology certification logging
-│   │   └── equipment.ts            # Asset commissioning
-│   ├── app/                        # App Router Routes & Layouts
-│   │   ├── api/                    # RESTful Route Handlers with RBAC
-│   │   │   ├── auth/session/route.ts
-│   │   │   ├── equipment/route.ts
-│   │   │   ├── borrow-requests/route.ts
-│   │   │   ├── maintenance/route.ts
-│   │   │   ├── calibration/route.ts
-│   │   │   ├── audit-logs/route.ts
-│   │   │   └── webhooks/resend/route.ts # Resend delivery webhook (Svix signature)
-│   │   ├── dashboard/page.tsx      # RSC Dashboard metrics & urgency feed
-│   │   ├── equipment/page.tsx      # Equipment catalog with Zustand filters
-│   │   ├── equipment/[id]/page.tsx # Dynamic asset detail & custody history
-│   │   ├── borrow-requests/page.tsx# Requisition lifecycle management
-│   │   ├── maintenance/page.tsx    # Technician service bay queue
-│   │   ├── calibration/page.tsx    # ISO-17025 metrology tracker
-│   │   ├── labs/page.tsx           # Department facilities directory
-│   │   ├── activity/page.tsx       # System-wide chain of custody audit stream
-│   │   ├── settings/page.tsx       # Session role switcher & preferences
-│   │   ├── ui/page.tsx             # Topic 1: Accessible UI Component Sandbox
-│   │   └── api/og/equipment/[id]/route.tsx# Dynamic Open Graph card generation
-│   ├── emails/                     # Topic 5: React Email Templates
-│   │   ├── BorrowApprovedEmail.tsx
-│   │   ├── BorrowRejectedEmail.tsx
-│   │   ├── EquipmentDueReminderEmail.tsx
-│   │   ├── MaintenanceAssignedEmail.tsx
-│   │   ├── MaintenanceResolvedEmail.tsx
-│   │   ├── CalibrationDueEmail.tsx
-│   │   └── CriticalIssueEmail.tsx
-│   ├── lib/
-│   │   ├── auth.ts                 # Server-side JWT session & authorization guards
-│   │   ├── prisma.ts               # Prisma Client singleton
-│   │   └── email.ts                # Resend service abstraction & fallback
-│   ├── middleware.ts               # Next.js Route & RBAC protection middleware
-│   ├── components/                 # Modular React Components (19 Radix UI primitives)
-│   ├── stores/                     # Zustand stores with localStorage persistence
-│   └── data/                       # Repository pattern & in-memory transactional fallback
+│   ├── actions/                # Next.js Server Actions (Borrow, Maintenance, Auth, Equipment)
+│   ├── app/                    # Next.js App Router (13 views + 8 API/Webhook routes)
+│   │   ├── activity/           # Immutable Audit Log stream (RBAC protected)
+│   │   ├── api/                # REST API routes & Svix Webhook endpoints
+│   │   ├── borrow-requests/    # Loan requisition management
+│   │   ├── calibration/        # ISO-17025 metrology calibration tracking
+│   │   ├── dashboard/          # Real-time institutional telemetry overview
+│   │   ├── equipment/          # Equipment catalog & detail pages ([id])
+│   │   ├── labs/               # Academic research facilities overview
+│   │   └── maintenance/        # Diagnostic work orders queue
+│   ├── components/             # Reusable UI & domain components
+│   ├── emails/                 # 7 React Email JSX templates
+│   ├── lib/                    # Prisma singleton, auth guards, Resend email dispatch
+│   ├── stores/                 # Zustand client stores (role switcher, filters)
+│   └── types/                  # Shared TypeScript domain definitions
+├── submission/                 # Presentation & formal report artifacts
+│   ├── Gamma_AI_Master_Prompt.txt # Master prompt for AI presentation generator
+│   ├── LabVault_Project_Presentation.pptx # 5-Slide Master PPT
+│   ├── LabVault_Project_Technical_Report.docx # Comprehensive DOCX Report
+│   └── assets/                 # Architecture, schema, and workflow diagrams
+└── docs/                       # 20+ Detailed technical documentation files
 ```
 
 ---
 
-## 🧪 Verification & Build Status
+## 🧪 Build & Verification Commands
 
 ```bash
-# Type Check
-npx tsc --noEmit           # 100% Passed (0 errors)
+# Type Checking (0 errors)
+npx tsc --noEmit
 
-# Lint
-npm run lint               # 100% Clean
+# Production Build (Exit Code 0)
+npm run build
 
-# Production Build
-npm run build              # All 14 routes compiled and optimized
+# Reset & Re-seed Database
+npm run db:reset
+npm run db:seed
 ```
+
+---
+
+## 📄 Academic Submission Deliverables
+
+- **Comprehensive Technical Report (.docx):** [`submission/LabVault_Project_Technical_Report.docx`](submission/LabVault_Project_Technical_Report.docx)
+- **Master Presentation (.pptx):** [`submission/LabVault_Project_Presentation.pptx`](submission/LabVault_Project_Presentation.pptx)
+- **Gamma AI Presentation Prompt:** [`submission/Gamma_AI_Master_Prompt.txt`](submission/Gamma_AI_Master_Prompt.txt)
+- **Technical Documentation & Reports:** [`docs/`](docs/)
+
+---
+
+## 👨‍💻 Author & Course Information
+- **Student:** Tirrth M
+- **Repository:** [https://github.com/TirrthM/FST_LabVault](https://github.com/TirrthM/FST_LabVault)
+- **Course:** Full-Stack Technology / Advanced Web Engineering
+- **Academic Year:** 2026
