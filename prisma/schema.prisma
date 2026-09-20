@@ -1,0 +1,346 @@
+// ─────────────────────────────────────────────────────────────────
+// LabVault — Enterprise Laboratory Management Prisma Schema
+// ─────────────────────────────────────────────────────────────────
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Enums
+// ─────────────────────────────────────────────────────────────────
+
+enum UserRole {
+  STUDENT
+  TECHNICIAN
+  LAB_MANAGER
+  ADMIN
+}
+
+enum EquipmentStatus {
+  AVAILABLE
+  RESERVED
+  BORROWED
+  UNDER_MAINTENANCE
+  UNDER_CALIBRATION
+  LOST
+  RETIRED
+  DISPOSED
+}
+
+enum EquipmentCondition {
+  NEW
+  GOOD
+  FAIR
+  POOR
+  DAMAGED
+  NEEDS_REPAIR
+}
+
+enum EquipmentCategory {
+  ANALYTICAL
+  MEASURING
+  COMPUTING
+  SAFETY
+  OPTICAL
+  ELECTRICAL
+  MECHANICAL
+  CHEMICAL
+  BIOLOGICAL
+  GENERAL
+}
+
+enum BorrowStatus {
+  REQUESTED
+  APPROVED
+  BORROWED
+  RETURNED
+  INSPECTED
+  REJECTED
+}
+
+enum MaintenancePriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum MaintenanceStatus {
+  OPEN
+  ASSIGNED
+  IN_REPAIR
+  TESTING
+  RESOLVED
+}
+
+enum CalibrationStatus {
+  CALIBRATED
+  DUE_SOON
+  OVERDUE
+  NOT_REQUIRED
+}
+
+enum AuditAction {
+  EQUIPMENT_CREATED
+  EQUIPMENT_UPDATED
+  EQUIPMENT_STATUS_CHANGED
+  EQUIPMENT_TRANSFERRED
+  BORROW_REQUESTED
+  BORROW_APPROVED
+  BORROW_REJECTED
+  EQUIPMENT_CHECKED_OUT
+  EQUIPMENT_RETURNED
+  INSPECTION_COMPLETED
+  MAINTENANCE_CREATED
+  MAINTENANCE_ASSIGNED
+  MAINTENANCE_STATUS_CHANGED
+  MAINTENANCE_RESOLVED
+  CALIBRATION_SCHEDULED
+  CALIBRATION_COMPLETED
+  ROLE_CHANGED
+  USER_LOGGED_IN
+}
+
+enum EmailEventType {
+  QUEUED
+  SENT
+  DELIVERED
+  OPENED
+  CLICKED
+  BOUNCED
+  COMPLAINED
+  FAILED
+}
+
+// ─────────────────────────────────────────────────────────────────
+// Models
+// ─────────────────────────────────────────────────────────────────
+
+model User {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  role        UserRole @default(STUDENT)
+  department  String?
+  avatarUrl   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  managedLabs          Lab[]                @relation("LabManager")
+  custodyEquipment     Equipment[]          @relation("CurrentCustodian")
+  borrowRequests       BorrowRequest[]      @relation("Requester")
+  approvedBorrows      BorrowRequest[]      @relation("Approver")
+  inspectedBorrows     BorrowRequest[]      @relation("Inspector")
+  reportedTickets      MaintenanceTicket[]  @relation("TicketReporter")
+  assignedTickets      MaintenanceTicket[]  @relation("AssignedTechnician")
+  maintenanceWorkLogs  MaintenanceWorkLog[] @relation("TechnicianWorkLog")
+  performedCalibrations CalibrationRecord[]  @relation("CalibrationTechnician")
+  auditLogs            AuditLog[]           @relation("AuditActor")
+
+  @@index([email])
+  @@index([role])
+}
+
+model Lab {
+  id          String   @id @default(cuid())
+  name        String
+  code        String   @unique
+  location    String
+  department  String
+  description String?  @db.Text
+  capacity    Int      @default(30)
+  managerId   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relationships
+  manager   User?       @relation("LabManager", fields: [managerId], references: [id], onDelete: SetNull)
+  equipment Equipment[]
+
+  @@index([code])
+  @@index([department])
+}
+
+model Equipment {
+  id                 String             @id @default(cuid())
+  assetId            String             @unique
+  name               String
+  category           EquipmentCategory  @default(GENERAL)
+  manufacturer       String
+  model              String
+  serialNumber       String             @unique
+  status             EquipmentStatus    @default(AVAILABLE)
+  condition          EquipmentCondition @default(GOOD)
+  locationDetails    String?
+  purchaseDate       DateTime?
+  purchaseCost       Float?
+  warrantyExpiry     DateTime?
+  labId              String
+  currentCustodianId String?
+  lastInspectionAt   DateTime?
+  qrCodeUrl          String?
+  specifications     String?            @db.Text
+  createdAt          DateTime           @default(now())
+  updatedAt          DateTime           @updatedAt
+
+  // Relationships
+  lab                Lab                 @relation(fields: [labId], references: [id], onDelete: Restrict)
+  currentCustodian   User?               @relation("CurrentCustodian", fields: [currentCustodianId], references: [id], onDelete: SetNull)
+  borrowRequests     BorrowRequest[]
+  maintenanceTickets MaintenanceTicket[]
+  calibrationRecords CalibrationRecord[]
+  auditLogs          AuditLog[]
+
+  @@index([assetId])
+  @@index([labId])
+  @@index([status])
+  @@index([category])
+}
+
+model BorrowRequest {
+  id                 String       @id @default(cuid())
+  requisitionNumber  String       @unique
+  equipmentId        String
+  userId             String
+  purpose            String       @db.Text
+  projectCourseName  String?
+  requestedStartDate DateTime
+  requestedEndDate   DateTime
+  actualReturnDate   DateTime?
+  status             BorrowStatus @default(REQUESTED)
+  approvedById       String?
+  approvalNotes      String?      @db.Text
+  returnCondition    EquipmentCondition?
+  inspectionNotes    String?      @db.Text
+  inspectedById      String?
+  createdAt          DateTime     @default(now())
+  updatedAt          DateTime     @updatedAt
+
+  // Relationships
+  equipment   Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  user        User      @relation("Requester", fields: [userId], references: [id], onDelete: Cascade)
+  approvedBy  User?     @relation("Approver", fields: [approvedById], references: [id], onDelete: SetNull)
+  inspectedBy User?     @relation("Inspector", fields: [inspectedById], references: [id], onDelete: SetNull)
+
+  @@index([requisitionNumber])
+  @@index([equipmentId])
+  @@index([userId])
+  @@index([status])
+}
+
+model MaintenanceTicket {
+  id                   String              @id @default(cuid())
+  ticketNumber         String              @unique
+  equipmentId          String
+  reportedById         String
+  assignedTechnicianId String?
+  issue                String              @db.Text
+  priority             MaintenancePriority @default(MEDIUM)
+  status               MaintenanceStatus   @default(OPEN)
+  resolution           String?             @db.Text
+  resolvedAt           DateTime?
+  estimatedCost        Float?
+  actualCost           Float?
+  createdAt            DateTime            @default(now())
+  updatedAt            DateTime            @updatedAt
+
+  // Relationships
+  equipment          Equipment            @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  reportedBy         User                 @relation("TicketReporter", fields: [reportedById], references: [id], onDelete: Cascade)
+  assignedTechnician User?                @relation("AssignedTechnician", fields: [assignedTechnicianId], references: [id], onDelete: SetNull)
+  workLogs           MaintenanceWorkLog[]
+
+  @@index([ticketNumber])
+  @@index([equipmentId])
+  @@index([status])
+  @@index([priority])
+}
+
+model MaintenanceWorkLog {
+  id             String   @id @default(cuid())
+  ticketId       String
+  technicianId   String
+  notes          String   @db.Text
+  partsReplaced  String?
+  timeSpentHours Float?
+  loggedAt       DateTime @default(now())
+  createdAt      DateTime @default(now())
+
+  // Relationships
+  ticket     MaintenanceTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  technician User              @relation("TechnicianWorkLog", fields: [technicianId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([technicianId])
+}
+
+model CalibrationRecord {
+  id                String            @id @default(cuid())
+  certificateNumber String            @unique
+  equipmentId       String
+  technicianId      String
+  calibrationDate   DateTime
+  nextDueDate       DateTime
+  standardUsed      String
+  accuracyReading   String
+  calibrationStatus CalibrationStatus @default(CALIBRATED)
+  certificateUrl    String?
+  notes             String?           @db.Text
+  createdAt         DateTime          @default(now())
+  updatedAt         DateTime          @updatedAt
+
+  // Relationships
+  equipment  Equipment @relation(fields: [equipmentId], references: [id], onDelete: Cascade)
+  technician User      @relation("CalibrationTechnician", fields: [technicianId], references: [id], onDelete: Cascade)
+
+  @@index([certificateNumber])
+  @@index([equipmentId])
+  @@index([calibrationStatus])
+}
+
+model AuditLog {
+  id          String      @id @default(cuid())
+  action      AuditAction
+  entity      String
+  entityId    String
+  actorId     String?
+  details     String?     @db.Text
+  ipAddress   String?
+  timestamp   DateTime    @default(now())
+
+  // Relationships
+  actor     User?      @relation("AuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+  equipment Equipment? @relation(fields: [entityId], references: [id], onDelete: Cascade)
+
+  @@index([action])
+  @@index([entity])
+  @@index([entityId])
+  @@index([actorId])
+  @@index([timestamp])
+}
+
+model EmailEvent {
+  id              String         @id @default(cuid())
+  providerEventId String?        @unique
+  messageId       String?
+  eventType       EmailEventType @default(SENT)
+  recipient       String
+  subject         String
+  emailType       String
+  payload         String?        @db.Text
+  timestamp       DateTime       @default(now())
+  createdAt       DateTime       @default(now())
+
+  @@index([providerEventId])
+  @@index([recipient])
+  @@index([eventType])
+  @@index([emailType])
+  @@index([timestamp])
+}
